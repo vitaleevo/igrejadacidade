@@ -8,17 +8,30 @@ export const dynamic = "force-static";
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 const CONVEX_MISSING = !process.env.NEXT_PUBLIC_CONVEX_URL;
 
-function errStatus(e: unknown): number {
-  const code = (e as { data?: { code?: unknown } })?.data?.code;
-  return typeof code === "number" ? code : 500;
-}
-
-function errMessage(e: unknown, status: number, fallback: string): string {
-  if (status === 422 || status === 400) {
-    const m = (e as Error)?.message;
-    if (typeof m === "string" && m.length < 300) return m;
+function convexError(e: unknown): { status: number; message: string } {
+  // fetchMutation/fetchQuery re-lançam ConvexError dentro da message:
+  // "...Uncaught ConvexError: {\"code\":400,...}\n at ...". Extrair sem vazar stack.
+  const m = String((e as Error)?.message ?? "");
+  const found = m.match(/Uncaught ConvexError:\s*(\{[\s\S]*?\})/);
+  if (found) {
+    try {
+      const data = JSON.parse(found[1]) as { code?: unknown; message?: unknown };
+      const status = typeof data.code === "number" ? data.code : 500;
+      const message =
+        typeof data.message === "string" && data.message.length < 300
+          ? data.message
+          : null;
+      if (status >= 400 && status < 500 && message) return { status, message };
+      return { status: status >= 500 ? 500 : status, message: "" };
+    } catch {
+      /* cai no genérico */
+    }
   }
-  return fallback;
+  const code = (e as { data?: { code?: unknown } })?.data?.code;
+  if (typeof code === "number" && code >= 400 && code < 500) {
+    return { status: code, message: "" };
+  }
+  return { status: 500, message: "" };
 }
 
 function toPublicShape(t: {
@@ -79,10 +92,10 @@ export async function GET(request: Request) {
     const list = await fetchQuery(api.testimonies.listPublic, { category, limit });
     return NextResponse.json(list.map(toPublicShape));
   } catch (e) {
-    const status = errStatus(e);
+    const err = convexError(e);
     return NextResponse.json(
-      { detail: errMessage(e, status, "Erro ao carregar testemunhos") },
-      { status }
+      { detail: err.message || "Erro ao carregar testemunhos" },
+      { status: err.status }
     );
   }
 }
@@ -121,10 +134,10 @@ export async function POST(request: Request) {
     notifyNewTestimony(result.id, str("full_name") ?? "", str("category") ?? "Other");
     return NextResponse.json({ id: result.id, status: "pending" }, { status: 201 });
   } catch (e) {
-    const status = errStatus(e);
+    const err = convexError(e);
     return NextResponse.json(
-      { detail: errMessage(e, status, "We could not confirm receipt. Please try again later.") },
-      { status }
+      { detail: err.message || "We could not confirm receipt. Please try again later." },
+      { status: err.status }
     );
   }
 }

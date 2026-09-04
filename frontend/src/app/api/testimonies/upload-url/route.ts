@@ -21,11 +21,21 @@ export async function GET(request: Request) {
     });
     return NextResponse.json({ uploadUrl });
   } catch (e) {
-    const status = (e as { data?: { code?: unknown } })?.data?.code;
-    const message = typeof (e as Error)?.message === "string" ? (e as Error).message : "Upload not allowed.";
-    return NextResponse.json(
-      { detail: typeof status === "number" && status < 500 ? message : "Upload not allowed." },
-      { status: typeof status === "number" ? status : 500 }
-    );
+    const m = String((e as Error)?.message ?? "");
+    const found = m.match(/Uncaught ConvexError:\s*(\{[\s\S]*?\})/);
+    let status = 500;
+    let message = "Upload not allowed.";
+    if (found) {
+      try {
+        const data = JSON.parse(found[1]) as { code?: unknown; message?: unknown };
+        if (typeof data.code === "number") status = data.code;
+        if (status < 500 && typeof data.message === "string" && data.message.length < 300) {
+          message = data.message;
+        }
+      } catch {
+        /* genérico */
+      }
+    }
+    return NextResponse.json({ detail: message }, { status });
   }
 }
