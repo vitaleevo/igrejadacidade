@@ -57,8 +57,31 @@ test("envio real usa multipart e só confirma criação com recibo", async () =>
     assert.equal(url, "/api/testimonies"); assert.equal(options.method, "POST");
     assert.ok(options.body instanceof FormData);
     assert.equal(options.body.get("allow_contact"), "false");
-    return Response.json({ id: 12, status: "pending" }, { status: 201 });
+    return Response.json({ id: "jx123abc", status: "pending" }, { status: 201 });
   } });
+});
+
+test("anexo sobe direto ao armazenamento e segue como referência", async () => {
+  const data = form();
+  data.set("media", new File(["sample"], "photo.jpg", { type: "image/jpeg" }));
+  const seen = [];
+  await submitTestimony(data, { preview: false, fetcher: async (url, options) => {
+    seen.push(String(url));
+    if (String(url).startsWith("/api/testimonies/upload-url")) {
+      return Response.json({ uploadUrl: "https://storage.test/upload" });
+    }
+    if (String(url) === "https://storage.test/upload") {
+      assert.equal(options.method, "POST");
+      return Response.json({ storageId: "kg123" });
+    }
+    assert.equal(url, "/api/testimonies");
+    assert.ok(options.body instanceof FormData);
+    assert.equal(options.body.get("mediaStorageId"), "kg123");
+    assert.equal(options.body.get("mediaType"), "image");
+    assert.equal(options.body.has("media"), false);
+    return Response.json({ id: "jx999", status: "pending" }, { status: 201 });
+  } });
+  assert.ok(seen.some((u) => u.startsWith("/api/testimonies/upload-url")));
 });
 
 for (const status of [400, 413, 422, 429, 500]) {
@@ -68,7 +91,7 @@ for (const status of [400, 413, 422, 429, 500]) {
 }
 
 test("não confirma resposta sem recibo nem falha de rede", async () => {
-  for (const response of [new Response("not JSON", { status: 201 }), Response.json({ id: 12 }, { status: 200 }), Response.json({ id: "bad" }, { status: 201 })]) {
+  for (const response of [new Response("not JSON", { status: 201 }), Response.json({ id: "jx123" }, { status: 200 }), Response.json({ id: "" }, { status: 201 }), Response.json({ id: 12 }, { status: 201 })]) {
     await assert.rejects(submitTestimony(form(), { preview: false, fetcher: async () => response }), /could not confirm receipt/);
   }
   await assert.rejects(submitTestimony(form(), { preview: false, fetcher: async () => { throw new TypeError("network"); } }));

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type T = {
-  id: number;
+  id: string;
   full_name: string;
   email?: string | null;
   phone?: string | null;
@@ -18,9 +18,9 @@ export function AdminDashboard({ initial }: { initial: { pending: T[]; approved:
   const router = useRouter();
   const [tab, setTab] = useState<"pending" | "approved" | "rejected">("pending");
   const [lists, setLists] = useState(initial);
-  const [busy, setBusy] = useState<number | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
 
-  async function moderate(id: number, status: "approved" | "rejected") {
+  async function moderate(id: string, status: "approved" | "rejected") {
     setBusy(id);
     await fetch("/api/admin/testimonies", {
       method: "PATCH",

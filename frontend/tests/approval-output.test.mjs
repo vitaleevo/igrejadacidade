@@ -19,7 +19,7 @@ test("Home está disponível nas três navegações da página principal", () =>
   assert.ok((html.match(/>Home<\/[^>]+>/g) || []).length >= 3);
 });
 
-test("pré-visualização não recolhe testemunhos e pede não indexação", () => {
+test("pré-visualização não recolhe testemunhos e pede não indexação", async () => {
   const html = readPage("testimonies");
   assert.match(html, /Approval preview — submissions are not enabled/);
   assert.match(html, /<form\b/);
@@ -32,7 +32,20 @@ test("pré-visualização não recolhe testemunhos e pede não indexação", () 
   assert.equal((html.match(/name="publication_consent"/g) || []).length, 2);
   assert.equal((html.match(/name="allow_contact"/g) || []).length, 2);
   assert.match(html, /noindex, nofollow/);
-  assert.equal(existsSync(new URL("../out/api", import.meta.url)), false);
+  // Rotas /api eksportadas têm de ser inertes (stubs de pré-visualização, sem dados)
+  const { readdirSync } = await import("node:fs");
+  const apiDir = new URL("../out/api", import.meta.url);
+  if (existsSync(apiDir)) {
+    const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+      const p = new URL(e.name, `${dir}/`);
+      return e.isDirectory() ? walk(p) : [p];
+    });
+    for (const file of walk(apiDir)) {
+      const body = readFileSync(file, "utf8");
+      assert.ok(/preview|not be|error|401|403|404/i.test(body), `api stub inerte: ${file}`);
+      assert.doesNotMatch(body, /@igrejadacidadeluanda|testimony.*story|full_name/i, `sem dados: ${file}`);
+    }
+  }
 });
 
 test("confirmação de demonstração é identificada e inclui o texto solicitado", () => {

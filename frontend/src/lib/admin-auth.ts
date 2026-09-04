@@ -49,10 +49,6 @@ export async function clearAdminCookie(): Promise<void> {
   jar.delete(COOKIE);
 }
 
-export function backendUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL || process.env.API_INTERNAL_URL || "http://localhost:8000";
-}
-
-export function adminHeaders(): Record<string, string> {
-  return { "X-Admin-Key": ADMIN_KEY };
+export function adminKey(): string {
+  return ADMIN_KEY;
 }

@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local-only / generated:
+    "node_modules.broken/**",
+    "convex/_generated/**",
   ]),
 ]);
 

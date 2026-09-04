@@ -1,5 +1,7 @@
+import { uploadTestimonyFile } from "./testimony-submission";
+
 export type TestimonyPublic = {
-  id: number;
+  id: string;
   full_name: string;
   story: string;
   happened_at: string | null;
@@ -28,6 +30,13 @@ async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs
 }
 
 export async function submitTestimony(formData: FormData) {
+  const media = formData.get("media");
+  if (media instanceof File && media.name) {
+    const { storageId, mediaType } = await uploadTestimonyFile(media);
+    formData.delete("media");
+    formData.set("mediaStorageId", storageId);
+    formData.set("mediaType", mediaType);
+  }
   const res = await fetchWithTimeout("/api/testimonies", {
     method: "POST",
     body: formData,
@@ -38,10 +47,10 @@ export async function submitTestimony(formData: FormData) {
     throw new ApiError(res.status, detail);
   }
   const data: unknown = await res.json().catch(() => null);
-  if (!data || typeof data !== "object" || !("id" in data) || !Number.isInteger((data as { id: unknown }).id)) {
+  if (!data || typeof data !== "object" || !("id" in data) || typeof (data as { id: unknown }).id !== "string" || !(data as { id: string }).id) {
     throw new ApiError(500, "Não foi possível confirmar a receção. Fale com a igreja antes de reenviar.");
   }
-  return data as TestimonyPublic & { id: number };
+  return data as { id: string; status: string };
 }
 
 export async function getTestimonies(params?: { category?: string; limit?: number }): Promise<TestimonyPublic[]> {

@@ -41,6 +41,36 @@ export function prepareTestimony(form: FormData): FormData {
   return payload;
 }
 
+export async function uploadTestimonyFile(
+  file: File,
+  options: { fetcher?: typeof fetch; signal?: AbortSignal } = {}
+): Promise<{ storageId: string; mediaType: "image" | "video" }> {
+  const invalid = validateTestimonyMedia(file);
+  if (invalid) throw new Error(invalid);
+  const fetcher = options.fetcher || fetch;
+  const qs = new URLSearchParams({ contentType: file.type, sizeBytes: String(file.size) });
+  const urlRes = await fetcher(`/api/testimonies/upload-url?${qs.toString()}`, {
+    signal: options.signal,
+  });
+  if (!urlRes.ok) throw new Error("The attachment could not be accepted. Please check its type and size.");
+  const { uploadUrl }: { uploadUrl?: unknown } = await urlRes.json().catch(() => ({}));
+  if (typeof uploadUrl !== "string" || !uploadUrl) {
+    throw new Error("The attachment could not be accepted. Please try again.");
+  }
+  const put = await fetcher(uploadUrl, {
+    method: "POST",
+    headers: { "Content-Type": file.type },
+    body: file,
+    signal: options.signal,
+  });
+  if (!put.ok) throw new Error("The attachment could not be uploaded. Please try again.");
+  const { storageId }: { storageId?: unknown } = await put.json().catch(() => ({}));
+  if (typeof storageId !== "string" || !storageId) {
+    throw new Error("The attachment could not be uploaded. Please try again.");
+  }
+  return { storageId, mediaType: file.type.startsWith("image/") ? "image" : "video" };
+}
+
 export async function submitTestimony(form: FormData, options: {
   preview: boolean;
   fetcher?: typeof fetch;
@@ -48,12 +78,20 @@ export async function submitTestimony(form: FormData, options: {
 }): Promise<void> {
   if (options.preview) throw new Error("This is an approval preview. No testimony has been sent.");
   const body = prepareTestimony(form);
+  const media = body.get("media");
+  if (media instanceof File && media.name) {
+    const { storageId, mediaType } = await uploadTestimonyFile(media, options);
+    body.delete("media");
+    body.set("mediaStorageId", storageId);
+    body.set("mediaType", mediaType);
+  }
   const response = await (options.fetcher || fetch)("/api/testimonies", {
     method: "POST", body, signal: options.signal,
   });
   if (!response.ok) {
     const messages: Record<number, string> = {
       400: "The attachment could not be accepted. Please check its type and size.",
+      403: "Submissions are not enabled in this preview.",
       413: "The attachment is too large. Please choose a file smaller than 50 MB.",
       422: "Please check your name, email, story and consent choices, then try again.",
       429: "Too many attempts. Please wait before submitting another testimony.",
@@ -61,7 +99,7 @@ export async function submitTestimony(form: FormData, options: {
     throw new Error(messages[response.status] || "We could not confirm receipt. Please try again later.");
   }
   const receipt: unknown = await response.json().catch(() => null);
-  if (response.status !== 201 || !receipt || typeof receipt !== "object" || !("id" in receipt) || !Number.isInteger(receipt.id)) {
+  if (response.status !== 201 || !receipt || typeof receipt !== "object" || !("id" in receipt) || typeof receipt.id !== "string" || !receipt.id) {
     throw new Error("We could not confirm receipt. Please check with the church before submitting again.");
   }
 }

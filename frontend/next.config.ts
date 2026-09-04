@@ -24,15 +24,9 @@ const nextConfig: NextConfig = {
   ...(!approvalPreview && isProdDocker ? { output: "standalone" } : {}),
   allowedDevOrigins: ["172.31.78.219"],
   poweredByHeader: false,
+  // Backend canónico: Vercel Route Handlers + Convex. Sem proxy externo.
   async rewrites() {
-    if (approvalPreview) return [];
-    return [
-      {
-        // /api/admin/* são Route Handlers Next (login/sessão) — NÃO proxiar para o backend.
-        source: "/api/:path((?!admin(?:/|$)).*)",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/:path*`,
-      },
-    ];
+    return [];
   },
   async headers() {
     if (approvalPreview) return [];
@@ -55,4 +49,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default approvalPreview ? { ...nextConfig, rewrites: undefined, headers: undefined } : nextConfig;
+export default approvalPreview ? { ...nextConfig, headers: undefined } : nextConfig;
