@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const approvalPreview = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
-const isProdDocker = process.env.DOCKER_BUILD === "true" || process.env.NODE_ENV === "production";
+// standalone SÓ para Docker prod — a Vercel não suporta output standalone (parte o onBuildComplete).
+const isProdDocker = process.env.DOCKER_BUILD === "true" && !process.env.VERCEL;
 
 const csp = [
   "default-src 'self'",
@@ -27,7 +28,8 @@ const nextConfig: NextConfig = {
     if (approvalPreview) return [];
     return [
       {
-        source: "/api/:path*",
+        // /api/admin/* são Route Handlers Next (login/sessão) — NÃO proxiar para o backend.
+        source: "/api/:path((?!admin(?:/|$)).*)",
         destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/:path*`,
       },
     ];
