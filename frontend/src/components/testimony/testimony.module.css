@@ -1,0 +1,87 @@
+.landing { background: #fff; color: var(--ink); }
+.cover { object-fit: cover; }
+.hero { position: relative; isolation: isolate; overflow: hidden; background: var(--ink); color: #fff; }
+.heroPhoto { position: absolute; inset: 0 0 0 35%; z-index: -2; }
+.heroPhoto img { object-position: 58% center; }
+.heroShade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #071a3d 8%, #071a3df5 31%, #071a3da6 53%, #071a3d0d 78%), linear-gradient(0deg, #071a3d99, transparent 45%); }
+.heroInner { max-width: 1280px; margin: auto; padding: 80px 48px 88px; }
+.eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; color: #d4e4fa; font-size: .75rem; font-weight: 600; letter-spacing: .2em; }
+.eyebrow > span { width: 24px; height: 2px; background: var(--gold); }
+.hero h1 { max-width: 680px; margin: 0; font-size: clamp(3.5rem, 6.4vw, 6rem); letter-spacing: -.065em; line-height: 1.02; }
+.hero h1 span { color: var(--gold); }
+.heroQuestion { max-width: 430px; margin-top: 32px; font-size: 1.2rem; font-weight: 600; line-height: 1.5; }
+.heroDescription { max-width: 420px; margin-top: 16px; color: #d4e0f0; font-size: 1rem; line-height: 1.8; }
+.heroCta { display: inline-flex; min-height: 56px; align-items: center; justify-content: center; gap: 32px; margin-top: 32px; border-radius: 8px; padding: 16px 24px; background: #fff; color: var(--ink); font-size: .875rem; font-weight: 700; transition: background .2s, transform .2s; }
+.heroCta:hover { background: #f5bd42; transform: translateY(-2px); }
+.photoCaption { position: absolute; right: max(48px, calc((100vw - 1184px) / 2)); bottom: 56px; padding-left: 24px; border-left: 2px solid var(--gold); color: #fff; font-size: .875rem; line-height: 1.8; text-shadow: 0 2px 12px #071a3d; }
+.trustBar { display: flex; justify-content: center; gap: 64px; padding: 24px; border-bottom: 1px solid var(--border); background: #f6f8fc; }
+.trustBar p { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .875rem; }
+.trustBar svg { flex-shrink: 0; color: var(--teal); }
+.formSection { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.65fr); align-items: start; gap: 80px; max-width: 1280px; margin: auto; padding: 96px 48px; }
+.guide { position: sticky; top: 112px; }
+.sectionEyebrow { color: var(--teal); font-size: .6875rem; font-weight: 700; letter-spacing: .16em; line-height: 1.7; }
+.guide h2 { margin-top: 24px; font-size: clamp(2rem, 3.2vw, 3rem); letter-spacing: -.05em; line-height: 1.12; }
+.guide h2 span { color: var(--teal); }
+.guideText { margin-top: 24px; color: var(--muted); font-size: 1rem; line-height: 1.8; }
+.steps { display: grid; gap: 0; margin-top: 32px; }
+.steps a { display: flex; align-items: center; gap: 16px; min-height: 88px; border-bottom: 1px solid var(--border); transition: color .2s; }
+.steps a:hover { color: var(--teal); }
+.steps a > span { display: grid; width: 40px; height: 40px; flex-shrink: 0; place-items: center; border: 1px solid #d8e2f0; border-radius: 50%; background: #f6f8fc; color: var(--teal); font-size: .75rem; font-weight: 600; }
+.steps a > div { flex: 1; }
+.steps strong { display: block; font-size: .875rem; font-weight: 600; }
+.steps small { display: block; margin-top: 4px; font-size: .8125rem; color: var(--muted); }
+.guidePhoto { position: relative; aspect-ratio: 4 / 3; margin-top: 32px; overflow: hidden; border-radius: 16px; }
+.formColumn { min-width: 0; }
+.formCard { padding: 40px; border: 1px solid #dfe6f0; border-radius: 24px; background: #fff; box-shadow: 0 24px 80px -24px #071a3d24; }
+.formHeader { display: flex; align-items: center; gap: 16px; }
+.formHeader h2 { margin-top: 4px; font-size: 1.75rem; letter-spacing: -.04em; }
+.formIcon { display: grid; place-items: center; width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px; background: #eef3fa; color: var(--teal); }
+.formHint { margin-top: 24px; padding-bottom: 32px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: .875rem; line-height: 1.7; }
+.formCard form { margin-top: 32px; }
+.formCard input:not([type="radio"]):not([type="file"]), .formCard textarea, .formCard select { border-color: #ccd8e8; border-radius: 8px; background: #f6f8fc; font-size: 1rem; }
+.formCard input:not([type="radio"]):not([type="file"]):focus, .formCard textarea:focus, .formCard select:focus { background: #fff; }
+.formCard label { line-height: 1.6; }
+.formCard label:has(input[type="radio"]) { border-radius: 12px; }
+.formCard button[type="submit"] { border-radius: 8px; background: var(--teal); font-size: .875rem; letter-spacing: .04em; }
+.formCard button[type="submit"]:not(:disabled):hover { background: var(--ink); }
+.sectionHeading { display: flex; align-items: center; gap: 12px; padding-top: 8px; scroll-margin-top: 112px; font-size: 1rem; letter-spacing: -.02em; }
+.sectionHeading span { color: var(--teal); font-size: .75rem; font-weight: 600; letter-spacing: .08em; }
+.previewLink { margin-top: 24px; text-align: center; font-size: .8125rem; }
+.previewLink a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 1023px) {
+  .heroInner { padding: 64px 32px; }
+  .heroPhoto { left: 25%; }
+  .photoCaption { right: 32px; bottom: 40px; }
+  .trustBar { gap: 32px; }
+  .formSection { gap: 32px; padding: 64px 32px; grid-template-columns: minmax(0, .7fr) minmax(0, 1.5fr); }
+  .formCard { padding: 24px; }
+}
+@media (max-width: 767px) {
+  .heroPhoto { inset: 0; }
+  .heroPhoto img { object-position: 62% center; }
+  .heroShade { background: linear-gradient(90deg, #071a3deb, #071a3d80), linear-gradient(0deg, #071a3d, transparent 80%); }
+  .heroInner { padding: 56px 24px; }
+  .hero h1 { font-size: clamp(3rem, 12vw, 4.5rem); }
+  .eyebrow { font-size: .6875rem; margin-bottom: 24px; }
+  .heroQuestion { font-size: 1.0625rem; }
+  .heroCta { width: 100%; justify-content: space-between; }
+  .photoCaption { display: none; }
+  .trustBar { justify-content: flex-start; flex-wrap: wrap; gap: 16px 24px; padding: 24px; }
+  .trustBar p { font-size: .8125rem; }
+  .formSection { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 48px 24px; }
+  .guide { position: static; }
+  .guide h2 { font-size: 2rem; }
+  .guide h2 br { display: none; }
+  .guide h2 { max-width: 350px; }
+  .guideText { margin-top: 16px; }
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 24px; }
+  .steps a { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 16px; }
+  .steps a > svg, .steps small, .guidePhoto { display: none; }
+  .steps strong { font-size: .8125rem; }
+  .formCard { padding: 24px 16px; border-radius: 16px; }
+  .formHeader { gap: 12px; }
+  .formHeader h2 { font-size: 1.5rem; }
+  .formIcon { width: 48px; height: 48px; border-radius: 12px; }
+  .formHeader .sectionEyebrow { font-size: .625rem; }
+}

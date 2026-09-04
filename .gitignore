@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+.env.local
+.env.*.local
+!.env.example
+*.db
+*.sqlite
+uploads/
+
+# Node
+node_modules/
+.next/
+.next-preview/
+out/
+dist/
+.npm/
+bun.lockb
+
+# Test artifacts / local tooling
+.playwright-mcp/
+work/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
