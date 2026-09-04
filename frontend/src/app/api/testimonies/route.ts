@@ -3,8 +3,6 @@ import { fetchMutation, fetchQuery } from "convex/nextjs";
 import nodemailer from "nodemailer";
 import { api } from "../../../../convex/_generated/api";
 
-export const dynamic = "force-static";
-
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 const CONVEX_MISSING = !process.env.NEXT_PUBLIC_CONVEX_URL;
 

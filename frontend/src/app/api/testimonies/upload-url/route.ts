@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { fetchMutation } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";
 
-export const dynamic = "force-static";
-
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 
 // GET /api/testimonies/upload-url?contentType=&sizeBytes= — URL curta para upload direto ao Convex.

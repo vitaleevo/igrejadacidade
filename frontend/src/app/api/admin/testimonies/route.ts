@@ -3,8 +3,6 @@ import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { isAdmin } from "@/lib/admin-auth";
 import { api } from "../../../../../convex/_generated/api";
 
-export const dynamic = "force-static";
-
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 const ADMIN_KEY = process.env.ADMIN_API_KEY || "";
 

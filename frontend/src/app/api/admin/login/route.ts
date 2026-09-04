@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { setAdminCookie, verifyAdminPassword } from "@/lib/admin-auth";
 
-export const dynamic = "force-static";
-
 export async function POST(request: Request) {
   if (process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true") {
     return NextResponse.json({ preview: true }, { status: 403 });
