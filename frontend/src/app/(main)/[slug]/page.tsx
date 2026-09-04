@@ -4,20 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 
 const pages: Record<string, { eyebrow: string; title: string; body: string; action: string; href: string }> = {
-  privacidade: {
-    eyebrow: "A SUA PRIVACIDADE",
-    title: "Política de Privacidade",
-    body: "Tratamos os dados enviados nos formulários apenas para responder ao seu pedido, acompanhar testemunhos e gerir atividades da igreja. Nunca publicamos um testemunho sem o seu consentimento expresso. Para corrigir ou eliminar os seus dados, contacte-nos.",
-    action: "Falar connosco",
-    href: "/contacto",
-  },
-  termos: {
-    eyebrow: "INFORMAÇÃO IMPORTANTE",
-    title: "Termos de utilização",
-    body: "Este site oferece informação sobre a Igreja da Cidade Luanda e permite o envio voluntário de pedidos e testemunhos. Os conteúdos publicados podem ser atualizados. Ao enviar um testemunho, confirma que as informações são verdadeiras e que possui autorização sobre qualquer ficheiro partilhado.",
-    action: "Partilhar testemunho",
-    href: "/testimonies",
-  },
+  // Nota: /privacidade e /termos têm páginas próprias completas; não duplicar aqui.
   oracao: {
     eyebrow: "ESTAMOS CONSIGO",
     title: "Pedido de oração",

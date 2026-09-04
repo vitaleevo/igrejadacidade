@@ -25,9 +25,6 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["172.31.78.219"],
   poweredByHeader: false,
   // Backend canónico: Vercel Route Handlers + Convex. Sem proxy externo.
-  async rewrites() {
-    return [];
-  },
   async headers() {
     if (approvalPreview) return [];
     const prodSecurity = process.env.NODE_ENV === "production" ? [

@@ -19,6 +19,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/doar",
     "/contacto",
     "/testimonies",
+    "/privacidade",
+    "/termos",
+    "/cookies",
+    "/sitemap",
   ];
   return staticRoutes.map((route) => ({
     url: `${baseUrl}${route || "/"}`,

@@ -50,7 +50,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-[1320px] flex-col gap-3 px-6 py-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <p>© 2026 Igreja da Cidade Luanda. Todos os direitos reservados.</p>
-          <div className="flex gap-5"><Link href="/privacidade" className="hover:text-white">Privacidade</Link><Link href="/termos" className="hover:text-white">Termos</Link></div>
+          <div className="flex gap-5"><Link href="/privacidade" className="hover:text-white">Privacidade</Link><Link href="/termos" className="hover:text-white">Termos</Link><Link href="/cookies" className="hover:text-white">Cookies</Link><Link href="/sitemap" className="hover:text-white">Mapa do site</Link></div>
         </div>
       </div>
     </footer>
