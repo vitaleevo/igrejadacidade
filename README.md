@@ -19,9 +19,10 @@ Em desenvolvimento local:
 
 ## Stack
 
-- **Backend:** Python 3.11, FastAPI, SQLAlchemy, Pydantic, SQLite (dev) / Postgres (prod), Uvicorn
-- **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Lucide Icons
-- **Infra:** Docker Compose, Nginx (subdomínios em prod), Vercel/Railway ready
+- **Frontend + backend:** Next.js 16 (App Router) na Vercel — Route Handlers em `/api/*`
+- **Base de dados + ficheiros:** Convex (tabelas `testimonies`, `audit_logs`; storage privado com URLs só pós-aprovação)
+- **Infra:** Vercel (web) + Convex (dados) + cPanel só para DNS/email
+- **Legado:** `backend/` (FastAPI) e `docker-compose.*` mantidos para referência; o canónico em produção é Vercel + Convex
 
 ---
 
@@ -158,11 +159,15 @@ server {
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| POST | `/api/testimonies` | Criar testemunho (multipart) |
+| POST | `/api/testimonies` | Criar testemunho (FormData; anexo sobe antes via `/api/testimonies/upload-url`) |
+| GET | `/api/testimonies/upload-url` | URL curta para upload direto ao Convex |
 | GET | `/api/testimonies` | Listar aprovados publicados |
-| GET | `/api/testimonies/admin` | Listar todos (admin) |
-| GET | `/api/testimonies/{id}` | Detalhe público |
-| PATCH | `/api/testimonies/{id}` | Aprovar/rejeitar |
+| GET | `/api/admin/testimonies` | Listar todos (cookie admin) |
+| PATCH | `/api/admin/testimonies` | Aprovar/rejeitar `{id, status?, publication_consent?}` |
+| GET | `/api/admin/audit` | Auditoria |
+| POST | `/api/admin/login` | Login admin (define cookie httpOnly) |
+
+Funções Convex em `frontend/convex/` (`submit`, `listPublic`, `getPublic`, `generateUploadUrl`, `adminList`, `moderate`, `auditList`). Deploy: `CONVEX_DEPLOY_KEY=... npx convex deploy`.
 
 ---
 
