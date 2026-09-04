@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
+import { Inter, Sora } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Admin",
+  title: {
+    default: "Gestão do site",
+    template: "%s · Gestão",
+  },
   description: "Gestão do site — Igreja da Cidade Luanda",
   robots: { index: false, follow: false },
 };
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-AO">
-      <body className="min-h-screen bg-[#f4f6fb] text-[#0b1e3a]">
-        <div className="mx-auto max-w-6xl px-4 py-8">{children}</div>
+    <html lang="pt-AO" className={`${inter.variable} ${sora.variable} h-full antialiased`}>
+      <body className="min-h-full bg-slate-100 font-[family-name:var(--font-inter)] text-slate-900">
+        {children}
       </body>
     </html>
   );

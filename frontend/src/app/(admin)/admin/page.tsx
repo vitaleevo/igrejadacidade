@@ -1,86 +1,62 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { fetchQuery } from "convex/nextjs";
 import { isAdmin } from "@/lib/admin-auth";
-import { api } from "../../../../convex/_generated/api";
-import { AdminDashboard } from "./AdminDashboard";
+import { getAdminList, getAudit } from "./_data";
+import { StatCards } from "./_components/StatCards";
+import { TestimonyCard } from "./_components/TestimonyCard";
+import { AuditTable } from "./_components/AuditTable";
+import { EmptyState, PageHeader } from "./_components/ui";
 
-const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
-const ADMIN_KEY = process.env.ADMIN_API_KEY || "";
-
-function shape(t: {
-  id: string;
-  fullName: string;
-  story: string;
-  happenedAt?: string;
-  category: string;
-  mediaUrl: string | null;
-  mediaType?: "image" | "video";
-  createdAt: number;
-  phone: string | null;
-  email: string | null;
-  allowContact: boolean;
-  publicationConsent: string;
-  status: string;
-  moderatedAt: number | null;
-}) {
-  return {
-    id: t.id,
-    full_name: t.fullName,
-    story: t.story,
-    happened_at: t.happenedAt ?? null,
-    category: t.category,
-    media_url: t.mediaUrl,
-    media_type: t.mediaType ?? null,
-    created_at: new Date(t.createdAt).toISOString(),
-    phone: t.phone,
-    email: t.email,
-    allow_contact: t.allowContact,
-    publication_consent: t.publicationConsent,
-    status: t.status,
-    moderated_at: t.moderatedAt ? new Date(t.moderatedAt).toISOString() : null,
-  };
-}
-
-async function getAdminList(status: "pending" | "approved" | "rejected") {
-  try {
-    const list = await fetchQuery(api.testimonies.adminList, {
-      adminKey: ADMIN_KEY,
-      status,
-      limit: 50,
-    });
-    return list.map(shape);
-  } catch {
-    return [];
-  }
-}
-
-async function getAudit() {
-  try {
-    return await fetchQuery(api.testimonies.auditList, { adminKey: ADMIN_KEY, limit: 20 });
-  } catch {
-    return [];
-  }
-}
-
-function PreviewNotice() {
-  return (
-    <main>
-      <h1 className="text-3xl font-bold">Gestão do site</h1>
-      <p className="mt-2 text-sm text-slate-600">
-        Pré-visualização para aprovação — a gestão está desativada nesta cópia.
-      </p>
-    </main>
-  );
-}
+export const metadata: Metadata = { title: "Visão geral" };
 
 export default async function AdminPage() {
-  if (PREVIEW || !process.env.NEXT_PUBLIC_CONVEX_URL) return <PreviewNotice />;
+  if (process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true") {
+    return (
+      <main>
+        <PageHeader title="Gestão do site" subtitle="Pré-visualização para aprovação — a gestão está desativada nesta cópia." />
+      </main>
+    );
+  }
   if (!(await isAdmin())) redirect("/admin/login");
   const [pending, approved, rejected, audit] = await Promise.all([
     getAdminList("pending"),
-    getAdminList("approved"),
-    getAdminList("rejected"),
-    getAudit(),
+    getAdminList("approved", 100),
+    getAdminList("rejected", 100),
+    getAudit(5),
   ]);
-  return <AdminDashboard initial={{ pending, approved, rejected, audit }} />;
+
+  return (
+    <main className="space-y-6">
+      <PageHeader
+        title="Visão geral"
+        subtitle="Reveja os testemunhos enviados no site antes de os publicar."
+      />
+      <StatCards pending={pending.length} approved={approved.length} rejected={rejected.length} />
+
+      <section aria-labelledby="fila">
+        <h2 id="fila" className="mb-3 font-[family-name:var(--font-sora)] text-lg font-bold text-slate-900">
+          Fila de moderação
+        </h2>
+        {pending.length ? (
+          <div className="space-y-3">
+            {pending.map((t) => (
+              <TestimonyCard key={t.id} testimony={t} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Tudo em dia"
+            hint="Não há testemunhos por rever. As novas submissões do formulário aparecem aqui automaticamente."
+          />
+        )}
+      </section>
+
+      <section aria-labelledby="atividade">
+        <h2 id="atividade" className="mb-3 font-[family-name:var(--font-sora)] text-lg font-bold text-slate-900">
+          Atividade recente
+        </h2>
+        <AuditTable rows={audit} />
+      </section>
+    </main>
+  );
 }
