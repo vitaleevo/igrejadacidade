@@ -13,8 +13,8 @@ export function ChurchOrganizationSchema({ url }: { url: string }) {
     },
     sameAs: [
       "https://www.facebook.com/rccgLuanda",
-      "https://instagram.com/igrejadacidadeluanda",
-      "https://youtube.com/@igrejadacidadeluanda",
+      "https://www.instagram.com/igreja_da_cidade_de_luanda/",
+      "https://www.youtube.com/@rccgluandatv9064",
     ],
   };
   return (

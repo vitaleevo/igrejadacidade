@@ -11,8 +11,8 @@ export const siteConfig = {
   phone: "+244 900 000 000",
   social: {
     facebook: "https://www.facebook.com/rccgLuanda",
-    instagram: "https://instagram.com/igrejadacidadeluanda",
-    youtube: "https://youtube.com/@igrejadacidadeluanda",
+    instagram: "https://www.instagram.com/igreja_da_cidade_de_luanda/",
+    youtube: "https://www.youtube.com/@rccgluandatv9064",
   },
   services: [
     { name: "1º Culto", time: "Todos os Domingos às 08:00", icon: "sunrise" },
