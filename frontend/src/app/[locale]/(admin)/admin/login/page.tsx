@@ -3,6 +3,7 @@ import { useState } from "react";
 import { KeyRound, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 export default function AdminLoginPage() {
   const t = useTranslations("Admin");
@@ -32,6 +33,9 @@ export default function AdminLoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#071A3D] px-4 py-10">
       <div className="w-full max-w-md">
+        <div className="mb-4 flex justify-center">
+          <LanguageSwitcher tone="dark" />
+        </div>
         <div className="mb-6 flex items-center justify-center gap-3">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F5BD42] font-[family-name:var(--font-sora)] text-xl font-bold text-[#071A3D]" aria-hidden>
             IC
