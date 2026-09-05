@@ -24,7 +24,7 @@ test("pré-visualização não recolhe testemunhos e pede não indexação", () 
   assert.match(html, /Approval preview — submissions are not enabled/);
   assert.match(html, /<form\b/);
   assert.match(html, /<button[^>]*type="submit"[^>]*disabled/);
-  for (const field of ["full_name", "phone", "email", "story", "happened_at", "category", "media", "allow_contact", "publication_consent"]) {
+  for (const field of ["full_name", "phone", "email", "story", "happened_at", "category", "media", "allow_contact", "publication_consent", "age_confirm"]) {
     assert.ok(html.includes(`name="${field}"`), field);
   }
   assert.match(html, /I prefer my testimony to be used for internal purposes only/);

@@ -6,6 +6,25 @@ import { api } from "../../../../convex/_generated/api";
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 const CONVEX_MISSING = !process.env.NEXT_PUBLIC_CONVEX_URL;
 
+/** Cloudflare Turnstile server-side. Sem secret configurado = passa (dev). */
+async function verifyTurnstile(token: string | undefined, ip?: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true;
+  if (!token) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token, ...(ip ? { remoteip: ip } : {}) }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    const data = (await res.json().catch(() => null)) as { success?: unknown } | null;
+    return data?.success === true;
+  } catch {
+    return false;
+  }
+}
+
 function convexError(e: unknown): { status: number; message: string } {
   // fetchMutation/fetchQuery re-lançam ConvexError dentro da message:
   // "...Uncaught ConvexError: {\"code\":400,...}\n at ...". Extrair sem vazar stack.
@@ -116,6 +135,13 @@ export async function POST(request: Request) {
     if (allowContact !== "true" && allowContact !== "false") {
       return NextResponse.json({ detail: "Please choose whether we may contact you." }, { status: 422 });
     }
+    if (str("age_confirm") !== "true") {
+      return NextResponse.json({ detail: "Please confirm you are 18 or older, or that your guardian authorizes this submission." }, { status: 422 });
+    }
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+    if (!(await verifyTurnstile(str("cf-turnstile-response"), ip))) {
+      return NextResponse.json({ detail: "Anti-robot verification failed. Please try again." }, { status: 400 });
+    }
     const mediaType = str("mediaType");
     const result = await fetchMutation(api.testimonies.submit, {
       fullName: str("full_name") ?? "",
@@ -128,6 +154,7 @@ export async function POST(request: Request) {
       mediaType: mediaType === "image" || mediaType === "video" ? mediaType : undefined,
       allowContact: allowContact === "true",
       publicationConsent: str("publication_consent") ?? "internal",
+      ageConfirm: true,
     });
     notifyNewTestimony(result.id, str("full_name") ?? "", str("category") ?? "Other");
     return NextResponse.json({ id: result.id, status: "pending" }, { status: 201 });

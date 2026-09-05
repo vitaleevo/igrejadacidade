@@ -22,7 +22,7 @@ export default function PrivacidadePage() {
         {
           heading: "Quem é responsável pelos seus dados",
           paragraphs: [
-            `A responsável pelo tratamento é a ${siteConfig.name}, em Luanda, Angola. Para qualquer questão sobre privacidade, escreva para ${siteConfig.email}.`,
+            `A responsável pelo tratamento é a ${siteConfig.name}, em Luanda, Angola. Para qualquer questão sobre privacidade — incluindo acesso, correção ou eliminação — escreva para ${siteConfig.email}, que também é o contacto do encarregado da proteção de dados.`,
           ],
         },
         {
@@ -55,13 +55,14 @@ export default function PrivacidadePage() {
         {
           heading: "Partilha e armazenamento",
           paragraphs: [
-            "Não vendemos nem partilhamos os seus dados com terceiros para marketing. Os dados ficam guardados na nossa plataforma (Convex, com alojamento seguro) e os anexos só ficam acessíveis depois de aprovação e consentimento de publicação.",
+            "Não vendemos nem partilhamos os seus dados com terceiros para marketing. Os dados ficam guardados na nossa plataforma de base de dados (Convex, em infraestrutura de nuvem segura fora de Angola). Ao enviar o formulário, consente nesta transferência internacional, necessária para prestar o serviço; pode pedir informações sobre as garantias aplicadas pelo email acima.",
+            "Os anexos ficam privados e só se tornam acessíveis depois de aprovação e consentimento de publicação.",
           ],
         },
         {
           heading: "Conservação",
           paragraphs: [
-            "Guardamos os dados apenas pelo tempo necessário às finalidades descritas. Se pedir a eliminação, removemos os seus dados pessoais e anexos num prazo razoável, exceto quando a lei exigir outra coisa.",
+            "Guardamos os dados apenas pelo tempo necessário às finalidades descritas. Testemunhos rejeitados são eliminados automaticamente, com os respetivos anexos, 180 dias após a decisão. Se pedir a eliminação, removemos os seus dados pessoais e anexos num prazo razoável, exceto quando a lei exigir outra coisa.",
           ],
         },
         {
@@ -77,7 +78,7 @@ export default function PrivacidadePage() {
         {
           heading: "Menores",
           paragraphs: [
-            "Testemunhos de menores devem ser enviados pelo encarregado de educação ou com a sua autorização.",
+            "O formulário exige a confirmação de que tem 18 ou mais anos, ou de que o encarregado de educação autoriza o envio. Testemunhos de menores sem essa autorização são eliminados na moderação.",
           ],
         },
         {

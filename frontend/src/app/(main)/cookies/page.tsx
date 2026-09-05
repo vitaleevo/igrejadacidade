@@ -33,12 +33,11 @@ export default function CookiesPage() {
           {
             heading: "Cookies de terceiros",
             paragraphs: [
-              "Algumas páginas mostram conteúdos externos, que podem definir os seus próprios cookies:",
+              "Neste momento não incorporamos conteúdos externos nas páginas (os vídeos do YouTube são apenas ligações que abrem no YouTube). Se incorporarmos vídeos ou mapas no futuro, atualizaremos esta página antes.",
             ],
             bullets: [
-              "Vídeos incorporados do YouTube (página Assistir).",
-              "Tipos de letra do Google Fonts.",
-              "Ligações para redes sociais (só definem cookies se as visitar).",
+              "Ligações para redes sociais e YouTube (só definem cookies se as visitar).",
+              "Tipos de letra do Google Fonts (técnicos, sem rastreio).",
             ],
           },
           {

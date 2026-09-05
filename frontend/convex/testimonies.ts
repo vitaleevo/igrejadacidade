@@ -33,6 +33,7 @@ function validateSubmit(args: {
   category: string;
   allowContact: boolean;
   publicationConsent: string;
+  ageConfirm: boolean;
 }) {
   const fullName = args.fullName.trim();
   if (fullName.length < 2 || fullName.length > 255) {
@@ -53,6 +54,12 @@ function validateSubmit(args: {
   }
   if (args.publicationConsent !== "publish" && args.publicationConsent !== "internal") {
     throw new ConvexError({ code: 422, message: "Please choose how your testimony may be used." });
+  }
+  if (args.ageConfirm !== true) {
+    throw new ConvexError({
+      code: 422,
+      message: "Please confirm you are 18 or older, or that your guardian authorizes this submission.",
+    });
   }
   return { fullName, story };
 }
@@ -121,6 +128,7 @@ export const submit = mutation({
     mediaType: v.optional(v.union(v.literal("image"), v.literal("video"))),
     allowContact: v.boolean(),
     publicationConsent: v.string(),
+    ageConfirm: v.boolean(),
   },
   returns: v.object({ id: v.string() }),
   handler: async (ctx, args) => {
@@ -143,6 +151,7 @@ export const submit = mutation({
       mediaType: args.mediaType,
       allowContact: args.allowContact,
       publicationConsent: args.publicationConsent as "publish" | "internal",
+      ageConfirmed: true,
       status: "pending",
       createdAt: now,
       updatedAt: now,
@@ -292,8 +301,7 @@ export const moderate = mutation({
   },
 });
 
-export const auditList = query({
-  args: { adminKey: v.string(), limit: v.optional(v.number()) },
+export const auditList = query({  args: { adminKey: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     requireAdmin(args.adminKey);
     const limit = Math.min(Math.max(args.limit ?? 50, 1), 200);

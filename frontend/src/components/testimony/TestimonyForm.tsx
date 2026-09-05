@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { siteConfig } from "@/lib/config";
 import { MEDIA_ACCEPT, submitTestimony, validateTestimonyMedia } from "@/lib/testimony-submission";
+import { TurnstileWidget } from "@/components/testimony/TurnstileWidget";
 import { TestimonySuccess } from "@/components/testimony/TestimonySuccess";
 import { Loader2, Upload, AlertCircle } from "lucide-react";
 import styles from "./testimony.module.css";
@@ -105,6 +106,10 @@ export function TestimonyForm() {
         <label className={choiceClass}><input type="radio" name="publication_consent" value="publish" required className="mt-1 h-4 w-4 shrink-0 accent-[#0b3b82]" /><span>I authorize the church to publish my testimony on its official channels.</span></label>
         <label className={choiceClass}><input type="radio" name="publication_consent" value="internal" required className="mt-1 h-4 w-4 shrink-0 accent-[#0b3b82]" /><span>I prefer my testimony to be used for internal purposes only.</span></label>
       </fieldset>
+      <div className="space-y-3">
+        <label className={`${choiceClass} cursor-pointer`}><input type="checkbox" name="age_confirm" value="true" required className="mt-1 h-4 w-4 shrink-0 accent-[#0b3b82]" /><span className="text-sm font-semibold">10. Age confirmation <span aria-hidden="true">*</span><span className="mt-1 block font-normal text-[var(--muted)]">I confirm that I am 18 or older, or that my parent/guardian authorizes this submission.</span></span></label>
+      </div>
+      <TurnstileWidget />
       <Button type="submit" disabled={loading || preview || !ready} size="lg" className="h-auto min-h-14 w-full whitespace-normal rounded-none py-4" aria-describedby={preview ? "preview-notice" : undefined}>
         {loading ? <><Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> SUBMITTING…</> : "SUBMIT MY TESTIMONY"}
       </Button>

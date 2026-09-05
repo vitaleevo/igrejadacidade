@@ -24,6 +24,8 @@ export default defineSchema({
     mediaType: v.optional(v.union(v.literal("image"), v.literal("video"))),
     allowContact: v.boolean(),
     publicationConsent: v.union(v.literal("publish"), v.literal("internal")),
+    // Opcional: só existe em registos criados após a introdução da confirmação de idade.
+    ageConfirmed: v.optional(v.boolean()),
     status: v.union(
       v.literal("pending"),
       v.literal("approved"),

@@ -30,8 +30,12 @@ export function prepareTestimony(form: FormData): FormData {
   if (consent !== "publish" && consent !== "internal") throw new Error("Please choose how your testimony may be used.");
   const contact = form.get("allow_contact");
   if (contact !== "true" && contact !== "false") throw new Error("Please choose whether we may contact you.");
+  if (form.get("age_confirm") !== "true") throw new Error("Please confirm you are 18 or older, or that your guardian authorizes this submission.");
   payload.set("publication_consent", consent);
   payload.set("allow_contact", contact);
+  payload.set("age_confirm", "true");
+  const turnstile = form.get("cf-turnstile-response");
+  if (typeof turnstile === "string" && turnstile) payload.set("cf-turnstile-response", turnstile);
   const media = form.get("media");
   if (media instanceof File && media.name) {
     const error = validateTestimonyMedia(media);

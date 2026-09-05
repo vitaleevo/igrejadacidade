@@ -4,7 +4,7 @@ import { prepareTestimony, submitTestimony, validateTestimonyMedia, MAX_MEDIA_BY
 
 function form() {
   const data = new FormData();
-  for (const [key, value] of Object.entries({ full_name: "  Test Visitor  ", story: "This is a detailed test testimony for validation.", phone: " ", email: "", category: "Healing", allow_contact: "false", publication_consent: "internal" })) data.set(key, value);
+  for (const [key, value] of Object.entries({ full_name: "  Test Visitor  ", story: "This is a detailed test testimony for validation.", phone: " ", email: "", category: "Healing", allow_contact: "false", publication_consent: "internal", age_confirm: "true" })) data.set(key, value);
   return data;
 }
 
@@ -25,12 +25,20 @@ test("preserva consentimento de publicação e contacto explícitos", () => {
   assert.equal(result.get("allow_contact"), "true");
 });
 
-for (const field of ["full_name", "story", "publication_consent", "allow_contact"]) {
+for (const field of ["full_name", "story", "publication_consent", "allow_contact", "age_confirm"]) {
   test(`rejeita ${field} em falta`, () => {
     const data = form(); data.delete(field);
     assert.throws(() => prepareTestimony(data));
   });
 }
+
+test("rejeita confirmação de idade inválida e passa token anti-robô", () => {
+  const bad = form(); bad.set("age_confirm", "false");
+  assert.throws(() => prepareTestimony(bad), /18 or older/);
+  const withToken = form(); withToken.set("cf-turnstile-response", "tok123");
+  assert.equal(prepareTestimony(withToken).get("cf-turnstile-response"), "tok123");
+  assert.equal(prepareTestimony(form()).get("age_confirm"), "true");
+});
 
 test("alinha tamanho, extensão e tipo de anexos com o servidor", () => {
   assert.equal(validateTestimonyMedia({ name: "photo.JPG", type: "image/jpeg", size: 128 }), null);
