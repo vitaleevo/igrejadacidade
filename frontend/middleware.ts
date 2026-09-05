@@ -27,22 +27,15 @@ export function middleware(request: NextRequest) {
     host.startsWith("testimonies.") || host.includes("testimonies.localhost");
 
   if (isTestimoniesSubdomain) {
-    if (pathname === "/" || pathname === "") {
-      url.pathname = "/testimonies";
-      return NextResponse.rewrite(url);
-    }
     const prefixed = pathname.match(LOCALE_PREFIX);
-    if (prefixed && (url.pathname === `/${prefixed[1]}` || url.pathname === `/${prefixed[1]}/`)) {
-      url.pathname = `/${prefixed[1]}/testimonies`;
+    const locale = prefixed ? prefixed[1] : "pt";
+    const bare = prefixed ? pathname.slice(`/${locale}`.length) || "/" : pathname;
+    if (bare === "/" || bare === "") {
+      url.pathname = `/${locale}/testimonies`;
       return NextResponse.rewrite(url);
     }
-    if (pathname === "/obrigado") {
-      url.pathname = "/testimonies/obrigado";
-      return NextResponse.rewrite(url);
-    }
-    const prefixedThanks = pathname.match(/^\/(pt|en|fr)\/obrigado\/?$/);
-    if (prefixedThanks) {
-      url.pathname = `/${prefixedThanks[1]}/testimonies/obrigado`;
+    if (bare === "/obrigado" || bare === "/obrigado/") {
+      url.pathname = `/${locale}/testimonies/obrigado`;
       return NextResponse.rewrite(url);
     }
   }
