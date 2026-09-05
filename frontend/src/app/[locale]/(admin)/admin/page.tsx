@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin-auth";
 import { getAdminList, getAudit } from "./_data";
@@ -9,15 +11,22 @@ import { EmptyState, PageHeader } from "./_components/ui";
 
 export const metadata: Metadata = { title: "Visão geral" };
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("Admin");
   if (process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true") {
     return (
       <main>
-        <PageHeader title="Gestão do site" subtitle="Pré-visualização para aprovação — a gestão está desativada nesta cópia." />
+        <PageHeader title={t("preview_title")} subtitle={t("preview_subtitle")} />
       </main>
     );
   }
-  if (!(await isAdmin())) redirect("/admin/login");
+  if (!(await isAdmin())) redirect(`/${locale}/admin/login`);
   const [pending, approved, rejected, audit] = await Promise.all([
     getAdminList("pending"),
     getAdminList("approved", 100),
@@ -27,33 +36,27 @@ export default async function AdminPage() {
 
   return (
     <main className="space-y-6">
-      <PageHeader
-        title="Visão geral"
-        subtitle="Reveja os testemunhos enviados no site antes de os publicar."
-      />
+      <PageHeader title={t("dash_title")} subtitle={t("dash_subtitle")} />
       <StatCards pending={pending.length} approved={approved.length} rejected={rejected.length} />
 
       <section aria-labelledby="fila">
         <h2 id="fila" className="mb-3 font-[family-name:var(--font-sora)] text-lg font-bold text-slate-900">
-          Fila de moderação
+          {t("queue_title")}
         </h2>
         {pending.length ? (
           <div className="space-y-3">
-            {pending.map((t) => (
-              <TestimonyCard key={t.id} testimony={t} />
+            {pending.map((item) => (
+              <TestimonyCard key={item.id} testimony={item} />
             ))}
           </div>
         ) : (
-          <EmptyState
-            title="Tudo em dia"
-            hint="Não há testemunhos por rever. As novas submissões do formulário aparecem aqui automaticamente."
-          />
+          <EmptyState title={t("empty_done_title")} hint={t("empty_done_hint")} />
         )}
       </section>
 
       <section aria-labelledby="atividade">
         <h2 id="atividade" className="mb-3 font-[family-name:var(--font-sora)] text-lg font-bold text-slate-900">
-          Atividade recente
+          {t("activity_title")}
         </h2>
         <AuditTable rows={audit} />
       </section>

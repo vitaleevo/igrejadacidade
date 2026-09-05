@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { KeyRound, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 
 export default function AdminLoginPage() {
+  const t = useTranslations("Admin");
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export default function AdminLoginPage() {
     });
     setLoading(false);
     if (!res.ok) {
-      setError("Chave incorreta. Tenta novamente.");
+      setError(t("login_error"));
       return;
     }
     router.push("/admin");
@@ -36,7 +38,7 @@ export default function AdminLoginPage() {
           </span>
           <div className="leading-tight text-white">
             <p className="font-[family-name:var(--font-sora)] text-lg font-bold">Igreja da Cidade</p>
-            <p className="text-xs text-slate-300">Gestão do site</p>
+            <p className="text-xs text-slate-300">{t("brand_subtitle")}</p>
           </div>
         </div>
 
@@ -46,14 +48,12 @@ export default function AdminLoginPage() {
           aria-labelledby="login-title"
         >
           <h1 id="login-title" className="font-[family-name:var(--font-sora)] text-xl font-bold text-slate-900">
-            Entrar na gestão
+            {t("login_title")}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Os testemunhos enviados no site chegam aqui para moderação.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{t("login_subtitle")}</p>
 
           <label className="mt-5 block text-sm font-medium text-slate-700" htmlFor="admin-key">
-            Chave de administração
+            {t("login_password")}
           </label>
           <div className="relative mt-1.5">
             <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
@@ -81,13 +81,11 @@ export default function AdminLoginPage() {
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B3B82] px-4 py-2.5 font-semibold text-white transition hover:bg-[#071A3D] disabled:opacity-50"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-            {loading ? "A entrar…" : "Entrar"}
+            {loading ? t("login_loading") : t("login_button")}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-slate-400">
-          Área reservada · atividade registada em auditoria
-        </p>
+        <p className="mt-4 text-center text-xs text-slate-400">{t("login_footer")}</p>
       </div>
     </main>
   );
