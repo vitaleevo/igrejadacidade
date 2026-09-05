@@ -1,10 +1,28 @@
 import { after, NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import nodemailer from "nodemailer";
 import { api } from "../../../../convex/_generated/api";
+import { EN_MSGS, type TestimonyMsgKey } from "@/lib/testimony-submission";
 
 const PREVIEW = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 const CONVEX_MISSING = !process.env.NEXT_PUBLIC_CONVEX_URL;
+
+/** Mensagens no idioma do pedido (header definido pelo middleware next-intl). */
+async function loadMsgs(): Promise<(key: TestimonyMsgKey) => string> {
+  try {
+    const h = await headers();
+    const loc = h.get("x-next-intl-locale");
+    const locale = loc === "en" || loc === "fr" ? loc : "pt";
+    const dict = (await import(`../../../../messages/${locale}.json`)).default as {
+      TestimonyErrors?: Record<string, string>;
+    };
+    const errs = dict?.TestimonyErrors ?? {};
+    return (key) => (typeof errs[key] === "string" && errs[key] ? errs[key] : EN_MSGS[key]);
+  } catch {
+    return (key) => EN_MSGS[key];
+  }
+}
 
 /** Cloudflare Turnstile server-side. Sem secret configurado = passa (dev). */
 async function verifyTurnstile(token: string | undefined, ip?: string): Promise<boolean> {
@@ -110,8 +128,9 @@ export async function GET(request: Request) {
     return NextResponse.json(list.map(toPublicShape));
   } catch (e) {
     const err = convexError(e);
+    const msg = await loadMsgs().catch(() => (key: TestimonyMsgKey) => EN_MSGS[key]);
     return NextResponse.json(
-      { detail: err.message || "Erro ao carregar testemunhos" },
+      { detail: err.message || msg("api_err_load") },
       { status: err.status }
     );
   }
@@ -126,6 +145,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ detail: "Service not configured." }, { status: 503 });
   }
   try {
+    const msg = await loadMsgs();
     const form = await request.formData();
     const str = (k: string) => {
       const v = form.get(k);
@@ -133,14 +153,14 @@ export async function POST(request: Request) {
     };
     const allowContact = str("allow_contact");
     if (allowContact !== "true" && allowContact !== "false") {
-      return NextResponse.json({ detail: "Please choose whether we may contact you." }, { status: 422 });
+      return NextResponse.json({ detail: msg("err_contact_required") }, { status: 422 });
     }
     if (str("age_confirm") !== "true") {
-      return NextResponse.json({ detail: "Please confirm you are 18 or older, or that your guardian authorizes this submission." }, { status: 422 });
+      return NextResponse.json({ detail: msg("err_age_required") }, { status: 422 });
     }
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
     if (!(await verifyTurnstile(str("cf-turnstile-response"), ip))) {
-      return NextResponse.json({ detail: "Anti-robot verification failed. Please try again." }, { status: 400 });
+      return NextResponse.json({ detail: msg("err_antirobot") }, { status: 400 });
     }
     const mediaType = str("mediaType");
     const result = await fetchMutation(api.testimonies.submit, {
@@ -160,8 +180,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ id: result.id, status: "pending" }, { status: 201 });
   } catch (e) {
     const err = convexError(e);
+    const msg = await loadMsgs().catch(() => (key: TestimonyMsgKey) => EN_MSGS[key]);
     return NextResponse.json(
-      { detail: err.message || "We could not confirm receipt. Please try again later." },
+      { detail: err.message || msg("err_generic") },
       { status: err.status }
     );
   }

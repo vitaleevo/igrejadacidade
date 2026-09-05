@@ -1,4 +1,4 @@
-import { uploadTestimonyFile } from "./testimony-submission";
+import { uploadTestimonyFile, type MsgFn } from "./testimony-submission";
 
 export type TestimonyPublic = {
   id: string;
@@ -29,10 +29,10 @@ async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs
   }
 }
 
-export async function submitTestimony(formData: FormData) {
+export async function submitTestimony(formData: FormData, msg?: MsgFn) {
   const media = formData.get("media");
   if (media instanceof File && media.name) {
-    const { storageId, mediaType } = await uploadTestimonyFile(media);
+    const { storageId, mediaType } = await uploadTestimonyFile(media, msg ? { msg } : {});
     formData.delete("media");
     formData.set("mediaStorageId", storageId);
     formData.set("mediaType", mediaType);
@@ -42,23 +42,23 @@ export async function submitTestimony(formData: FormData) {
     body: formData,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Erro desconhecido" }));
-    const detail = typeof err.detail === "string" ? err.detail : "Erro ao enviar testemunho";
+    const err = await res.json().catch(() => ({ detail: msg?.("api_err_unknown") ?? "Erro desconhecido" }));
+    const detail = typeof err.detail === "string" ? err.detail : (msg?.("api_err_submit") ?? "Erro ao enviar testemunho");
     throw new ApiError(res.status, detail);
   }
   const data: unknown = await res.json().catch(() => null);
   if (!data || typeof data !== "object" || !("id" in data) || typeof (data as { id: unknown }).id !== "string" || !(data as { id: string }).id) {
-    throw new ApiError(500, "Não foi possível confirmar a receção. Fale com a igreja antes de reenviar.");
+    throw new ApiError(500, msg?.("api_err_receipt") ?? "Não foi possível confirmar a receção. Fale com a igreja antes de reenviar.");
   }
   return data as { id: string; status: string };
 }
 
-export async function getTestimonies(params?: { category?: string; limit?: number }): Promise<TestimonyPublic[]> {
+export async function getTestimonies(params?: { category?: string; limit?: number }, msg?: MsgFn): Promise<TestimonyPublic[]> {
   const query = new URLSearchParams();
   if (params?.category) query.set("category", params.category);
   if (params?.limit) query.set("limit", String(params.limit));
   const suffix = query.size ? `?${query.toString()}` : "";
   const res = await fetchWithTimeout(`/api/testimonies${suffix}`, { cache: "no-store" });
-  if (!res.ok) throw new ApiError(res.status, "Erro ao carregar testemunhos");
+  if (!res.ok) throw new ApiError(res.status, msg?.("api_err_load") ?? "Erro ao carregar testemunhos");
   return (await res.json()) as TestimonyPublic[];
 }

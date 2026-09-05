@@ -1,42 +1,55 @@
+import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { routing } from "./src/i18n/routing";
+
+const intlMiddleware = createMiddleware(routing);
+
+const LOCALE_PREFIX = /^\/(pt|en|fr)(\/|$)/;
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
   const pathname = url.pathname;
 
-  // Detecta subdomínio de testemunhos
-  // Em dev: testimonies.localhost:3000
-  // Em prod: testimonies.igrejadacidadeluanda.org
-  const isTestimoniesSubdomain =
-    host.startsWith("testimonies.") ||
-    host.includes("testimonies.localhost");
+  // Nunca localizar: admin, API, ficheiros estáticos.
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
 
-  // Se for subdomínio de testemunhos, reescreve rotas
+  // Subdomínio de testemunhos: / → /testimonies (preserva prefixo en/fr).
+  // Em dev: testimonies.localhost:3000 · Em prod: testimonies.igrejadacidadeluanda.org
+  const isTestimoniesSubdomain =
+    host.startsWith("testimonies.") || host.includes("testimonies.localhost");
+
   if (isTestimoniesSubdomain) {
-    // Evita loop se já estiver em /testimonies
     if (pathname === "/" || pathname === "") {
       url.pathname = "/testimonies";
       return NextResponse.rewrite(url);
     }
-    // /obrigado no subdomínio -> /testimonies/obrigado
+    const prefixed = pathname.match(LOCALE_PREFIX);
+    if (prefixed && (url.pathname === `/${prefixed[1]}` || url.pathname === `/${prefixed[1]}/`)) {
+      url.pathname = `/${prefixed[1]}/testimonies`;
+      return NextResponse.rewrite(url);
+    }
     if (pathname === "/obrigado") {
       url.pathname = "/testimonies/obrigado";
       return NextResponse.rewrite(url);
     }
-    // Permite assets e api
-    if (pathname.startsWith("/_next") || pathname.startsWith("/api")) {
-      return NextResponse.next();
+    const prefixedThanks = pathname.match(/^\/(pt|en|fr)\/obrigado\/?$/);
+    if (prefixedThanks) {
+      url.pathname = `/${prefixedThanks[1]}/testimonies/obrigado`;
+      return NextResponse.rewrite(url);
     }
-    // Qualquer outra rota no subdomínio: mantém mas tenta servir de /testimonies
-    // Se não for /testimonies/*, deixa passar (404 será tratado)
-    return NextResponse.next();
   }
 
-  // Domínio principal: se acessar /testimonies diretamente, permite (fallback)
-  return NextResponse.next();
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|admin).*)"],
 };

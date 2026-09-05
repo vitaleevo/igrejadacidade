@@ -11,12 +11,14 @@ export function LegalPage({
   title,
   intro,
   updated,
+  updatedLabel,
   sections,
 }: {
   eyebrow: string;
   title: string;
   intro: string;
   updated: string;
+  updatedLabel: string;
   sections: LegalSection[];
 }) {
   return (
@@ -25,7 +27,7 @@ export function LegalPage({
       <section className="bg-[var(--ivory)] px-5 py-14 sm:px-8 lg:py-20">
         <div className="mx-auto max-w-3xl">
           <p className="text-lg leading-8 text-[var(--ink)]">{intro}</p>
-          <p className="mt-3 text-sm text-slate-500">Última atualização: {updated}</p>
+          <p className="mt-3 text-sm text-slate-500">{updatedLabel} {updated}</p>
           <div className="mt-10 space-y-10">
             {sections.map((s, i) => (
               <section key={s.heading} aria-labelledby={`legal-${i}`}>

@@ -1,19 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Sora } from "next/font/google";
 import "./globals.css";
-import { ChurchOrganizationSchema } from "@/components/seo/JsonLd";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-sora",
-  display: "swap",
-});
 
 const publicOrigin = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true"
   ? "https://igreja-cidade-luanda-aprovacao.holyconexao.chatgpt.site"
@@ -57,15 +43,7 @@ export const viewport: Viewport = {
   themeColor: "#071a3d",
 };
 
+// O <html>/<body> vivem em app/[locale]/layout.tsx (next-intl).
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="pt-AO" className={`${inter.variable} ${sora.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-white text-[var(--ink)]">
-        <ChurchOrganizationSchema url={publicOrigin} />
-        {process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true" && <p className="bg-[#071a3d] px-4 py-2 text-center text-xs leading-5 text-white">Pré-visualização para aprovação · Conteúdos e contactos sujeitos a confirmação.</p>}
-        <a href="#conteudo-principal" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--teal)] focus:shadow-lg">Saltar para o conteúdo</a>
-        {children}
-      </body>
-    </html>
-  );
+  return children;
 }

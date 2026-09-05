@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useReducedMotion } from "@/lib/motion-preference";
 
 export type HeroSlide = {
@@ -17,60 +18,43 @@ export type HeroSlide = {
   secondary?: { label: string; href: string };
 };
 
-export const HERO_SLIDES: HeroSlide[] = [
-  {
-    image: "/images/worship-hero.webp",
-    mobileImage: "/images/mobile-worship-ai.webp",
-    alt: "Imagem ilustrativa gerada por IA de uma comunidade cristã em adoração",
-    eyebrow: "Igreja da Cidade · Luanda",
-    title: (
-      <>
-        Uma casa para
-        <br />
-        <span className="text-[#8eb5e5]">toda a cidade.</span>
-      </>
-    ),
-    text: "Um lugar para conhecer Jesus, construir relações verdadeiras e viver uma fé que transforma.",
-    primary: { label: "Planear uma visita", href: "/sou-novo" },
-    secondary: { label: "Assistir online", href: "/assistir" },
-  },
-  {
-    image: "/images/community-families-ai.webp",
-    alt: "Imagem ilustrativa gerada por IA de famílias angolanas reunidas em comunidade",
-    eyebrow: "Há um lugar para si",
-    title: (
-      <>
-        Mais que um culto.
-        <br />
-        <span className="text-[#f5bd42]">Uma família.</span>
-      </>
-    ),
-    text: "Venha como está. Encontre pessoas com quem pode crescer, servir e caminhar.",
-    primary: { label: "Encontrar um grupo", href: "/grupos" },
-  },
-  {
-    image: "/images/message-speaker-ai.webp",
-    alt: "Imagem ilustrativa gerada por IA de uma mensagem bíblica numa igreja contemporânea",
-    eyebrow: "Palavra para a vida",
-    title: (
-      <>
-        Esperança para
-        <br />
-        <span className="text-[#8eb5e5]">cada semana.</span>
-      </>
-    ),
-    text: "Mensagens práticas, adoração viva e espaço para toda a família.",
-    primary: { label: "Ver mensagens", href: "/assistir" },
-  },
-];
-
 type HeroSlideshowProps = {
   slides?: HeroSlide[];
   intervalMs?: number;
   variant?: "desktop" | "mobile";
 };
 
-export function HeroSlideshow({ slides = HERO_SLIDES, intervalMs = 7000, variant = "desktop" }: HeroSlideshowProps) {
+export function HeroSlideshow({ slides: slidesProp, intervalMs = 7000, variant = "desktop" }: HeroSlideshowProps) {
+  const t = useTranslations("Home");
+  const defaultSlides: HeroSlide[] = [
+    {
+      image: "/images/worship-hero.webp",
+      mobileImage: "/images/mobile-worship-ai.webp",
+      alt: t("slide1_alt"),
+      eyebrow: t("slide1_eyebrow"),
+      title: t("slide1_title"),
+      text: t("slide1_text"),
+      primary: { label: t("slide1_primary"), href: "/sou-novo" },
+      secondary: { label: t("slide1_secondary"), href: "/assistir" },
+    },
+    {
+      image: "/images/community-families-ai.webp",
+      alt: t("slide2_alt"),
+      eyebrow: t("slide2_eyebrow"),
+      title: t("slide2_title"),
+      text: t("slide2_text"),
+      primary: { label: t("slide2_primary"), href: "/grupos" },
+    },
+    {
+      image: "/images/message-speaker-ai.webp",
+      alt: t("slide3_alt"),
+      eyebrow: t("slide3_eyebrow"),
+      title: t("slide3_title"),
+      text: t("slide3_text"),
+      primary: { label: t("slide3_primary"), href: "/assistir" },
+    },
+  ];
+  const slides = slidesProp ?? defaultSlides;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [autoplayEnabled, setAutoplayEnabled] = useState(true);
@@ -97,8 +81,8 @@ export function HeroSlideshow({ slides = HERO_SLIDES, intervalMs = 7000, variant
   return (
     <div
       role="region"
-      aria-roledescription="carrossel"
-      aria-label="Destaques da Igreja da Cidade Luanda"
+      aria-roledescription={t("slideshow_roledescription")}
+      aria-label={t("slideshow_aria_label")}
       className={
         isMobile
           ? "relative min-h-[600px] overflow-hidden rounded-[1.5rem] bg-[#071a3d] text-white shadow-[0_20px_54px_rgba(7,26,61,.22)]"
@@ -164,7 +148,7 @@ export function HeroSlideshow({ slides = HERO_SLIDES, intervalMs = 7000, variant
         <div className="absolute inset-x-0 bottom-0 z-10 border-t border-white/15 bg-[#0b3b82]/95 backdrop-blur-sm">
           <div className="reference-stripes pointer-events-none absolute left-[42%] top-[-72px] h-64 w-64 -rotate-6 opacity-90" />
           <div className="mx-auto flex min-h-40 max-w-[1320px] items-center px-8 lg:px-12">
-            <p className="relative z-10 max-w-5xl text-[clamp(1.35rem,2.35vw,2.4rem)] font-extrabold uppercase tracking-[.26em] text-white">Crer. Pertencer. Transformar.</p>
+            <p className="relative z-10 max-w-5xl text-[clamp(1.35rem,2.35vw,2.4rem)] font-extrabold uppercase tracking-[.26em] text-white">{t("motto")}</p>
           </div>
         </div>
       )}
@@ -172,20 +156,20 @@ export function HeroSlideshow({ slides = HERO_SLIDES, intervalMs = 7000, variant
 
       <div className={`absolute z-20 flex items-center gap-2 ${isMobile ? "bottom-4 left-6" : "top-6 right-8 lg:right-12"}`}>
         {!reducedMotion && (
-          <button type="button" onClick={() => setAutoplayEnabled((enabled) => !enabled)} aria-label={autoplayEnabled ? "Pausar rotação automática" : "Retomar rotação automática"} className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
+          <button type="button" onClick={() => setAutoplayEnabled((enabled) => !enabled)} aria-label={autoplayEnabled ? t("slideshow_pause") : t("slideshow_resume")} className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
             {autoplayEnabled ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
           </button>
         )}
-        <button type="button" onClick={() => goTo(index - 1)} aria-label="Slide anterior" className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
+        <button type="button" onClick={() => goTo(index - 1)} aria-label={t("slideshow_prev")} className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
           <ChevronLeft className="h-5 w-5" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => goTo(index + 1)} aria-label="Próximo slide" className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
+        <button type="button" onClick={() => goTo(index + 1)} aria-label={t("slideshow_next")} className="grid h-11 w-11 place-items-center border border-white/35 bg-[#071a3d]/50 text-white backdrop-blur transition hover:bg-white hover:text-[#071a3d]">
           <ChevronRight className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
       {isMobile && (
-        <p className="absolute bottom-4 right-6 z-20 flex h-11 items-center text-xs font-bold tracking-[.15em] text-white/75" aria-label={`Destaque ${index + 1} de ${count}`}>
+        <p className="absolute bottom-4 right-6 z-20 flex h-11 items-center text-xs font-bold tracking-[.15em] text-white/75" aria-label={t("slideshow_counter", { index: index + 1, count })}>
           {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
         </p>
       )}

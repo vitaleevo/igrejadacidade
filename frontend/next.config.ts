@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const approvalPreview = process.env.NEXT_PUBLIC_APPROVAL_PREVIEW === "true";
 // standalone SÓ para Docker prod — a Vercel não suporta output standalone (parte o onBuildComplete).
@@ -46,4 +47,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default approvalPreview ? { ...nextConfig, headers: undefined } : nextConfig;
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+export default withNextIntl(approvalPreview ? { ...nextConfig, headers: undefined } : nextConfig);
