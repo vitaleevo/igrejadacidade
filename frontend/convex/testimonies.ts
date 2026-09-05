@@ -138,6 +138,29 @@ export const submit = mutation({
       if (!meta) {
         throw new ConvexError({ code: 400, message: "Attachment not found. Upload again." });
       }
+      // Verificação servidor: tipo e tamanho REAIS do ficheiro, não os declarados.
+      const sys = meta as unknown as { contentType?: unknown; size?: unknown; sha256?: unknown };
+      const realType = typeof sys.contentType === "string" ? sys.contentType : null;
+      const realSize = typeof sys.size === "number" ? sys.size : null;
+      const expectedKind = args.mediaType ?? (realType?.startsWith("image/") ? "image" : realType?.startsWith("video/") ? "video" : null);
+      const maxBytes =
+        expectedKind === "video" ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+      const typeOk =
+        realType === null ||
+        ALLOWED_MIME_IMAGE.includes(realType) ||
+        ALLOWED_MIME_VIDEO.includes(realType);
+      const kindOk =
+        !args.mediaType ||
+        realType === null ||
+        (args.mediaType === "image" ? realType.startsWith("image/") : realType.startsWith("video/"));
+      if (!typeOk || !kindOk || (realSize !== null && (realSize <= 0 || realSize > maxBytes))) {
+        try {
+          await ctx.storage.delete(args.mediaStorageId);
+        } catch {
+          /* já ausente */
+        }
+        throw new ConvexError({ code: 400, message: "Attachment rejected: type or size not allowed." });
+      }
     }
     const now = Date.now();
     const id = await ctx.db.insert("testimonies", {
