@@ -12,7 +12,7 @@ export function ChurchOrganizationSchema({ url }: { url: string }) {
       addressCountry: "AO",
     },
     sameAs: [
-      "https://facebook.com/igrejadacidadeluanda",
+      "https://www.facebook.com/rccgLuanda",
       "https://instagram.com/igrejadacidadeluanda",
       "https://youtube.com/@igrejadacidadeluanda",
     ],

@@ -10,7 +10,7 @@ export const siteConfig = {
   email: "contacto@igrejadacidadeluanda.org",
   phone: "+244 900 000 000",
   social: {
-    facebook: "https://facebook.com/igrejadacidadeluanda",
+    facebook: "https://www.facebook.com/rccgLuanda",
     instagram: "https://instagram.com/igrejadacidadeluanda",
     youtube: "https://youtube.com/@igrejadacidadeluanda",
   },
