@@ -2,7 +2,6 @@
 
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import {
   CircleCheck,
   CircleX,
@@ -81,9 +80,6 @@ export function Sidebar({ pendingCount }: { pendingCount: number }) {
       <div className="flex-1 px-3">{nav}</div>
 
       <div className="p-3">
-        <div className="mb-2 flex justify-center">
-          <LanguageSwitcher tone="dark" />
-        </div>
         <button
           onClick={logout}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white"

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { Sidebar } from "./Sidebar";
 
 export function Shell({
@@ -23,7 +24,7 @@ export function Shell({
       </aside>
 
       {/* Topbar mobile */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200 bg-[#071A3D] px-4 py-3 text-white lg:hidden">
+      <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-slate-200 bg-[#071A3D] px-4 py-3 text-white lg:hidden">
         <button
           onClick={() => setOpen(true)}
           aria-label={t("menu_open")}
@@ -32,14 +33,10 @@ export function Shell({
         >
           <Menu className="h-5 w-5" aria-hidden />
         </button>
-        <p className="font-[family-name:var(--font-sora)] text-sm font-bold">
+        <p className="min-w-0 flex-1 truncate font-[family-name:var(--font-sora)] text-sm font-bold">
           Igreja da Cidade <span className="font-normal text-slate-300">· {t("brand_management")}</span>
         </p>
-        {pendingCount > 0 && (
-          <span className="ml-auto rounded-full bg-[#F5BD42] px-2 py-0.5 text-xs font-bold text-[#071A3D]">
-            {pendingCount}
-          </span>
-        )}
+        <LanguageSwitcher tone="dark" compact />
       </div>
 
       {/* Drawer mobile */}
@@ -61,9 +58,15 @@ export function Shell({
         </div>
       )}
 
-      <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-        <div className="mx-auto max-w-5xl">{children}</div>
-      </main>
+      <div className="min-w-0">
+        {/* Barra utilitária desktop: seletor de idioma no canto superior direito */}
+        <div className="sticky top-0 z-20 hidden justify-end border-b border-slate-200/70 bg-slate-100/90 px-10 py-2.5 backdrop-blur lg:flex">
+          <LanguageSwitcher compact />
+        </div>
+        <main className="px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+          <div className="mx-auto max-w-5xl">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
