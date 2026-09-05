@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export default async function TestimoniesLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
@@ -17,12 +18,15 @@ export default async function TestimoniesLayout({ children, params }: { children
               <div className="mt-1 text-[10px] font-semibold uppercase tracking-[.28em] text-[var(--teal)]">{t("brand_city")}</div>
             </div>
           </Link>
-          <Link href="/" className="hidden min-h-11 items-center rounded-full border border-[#071a3d]/15 px-5 text-sm font-semibold text-[#071a3d] transition hover:bg-[#eef3fa] md:inline-flex">
-            ← {t("home_link")}
-          </Link>
-          <Link href="/" className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-[#071a3d] md:hidden">
-            {t("home_link")}
-          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageSwitcher compact />
+            <Link href="/" className="hidden min-h-11 items-center rounded-full border border-[#071a3d]/15 px-5 text-sm font-semibold text-[#071a3d] transition hover:bg-[#eef3fa] md:inline-flex">
+              ← {t("home_link")}
+            </Link>
+            <Link href="/" className="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-[#071a3d] md:hidden">
+              {t("home_link")}
+            </Link>
+          </div>
         </div>
       </header>
       <main id="conteudo-principal" lang={locale}>{children}</main>
